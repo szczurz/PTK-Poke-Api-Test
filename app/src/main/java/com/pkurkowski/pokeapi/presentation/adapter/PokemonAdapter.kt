@@ -1,4 +1,4 @@
-package com.pkurkowski.pokeapi.presentation
+package com.pkurkowski.pokeapi.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +14,13 @@ import com.pkurkowski.pokeapi.domain.Pokemon
 class PokemonAdapter :
     PagingDataAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(PokemonComparator) {
 
-    class PokemonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val nameTextView: TextView = view.findViewById(R.id.nameTextView)
-        private val idTextView: TextView = view.findViewById(R.id.idTextView)
-        val iconImageView: ImageView = view.findViewById(R.id.iconImageView)
+    class PokemonViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+        LayoutInflater.from(parent.context).inflate(R.layout.item_pokemon_list, parent, false)
+    ) {
+        private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
+        private val idTextView: TextView = itemView.findViewById(R.id.idTextView)
+        private val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
+
         fun bind(pokemon: Pokemon?) {
             nameTextView.text = pokemon?.name ?: ""
             idTextView.text = pokemon?.id?.toString() ?: ""
@@ -30,9 +33,7 @@ class PokemonAdapter :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_pokemon_list, parent, false)
-        return PokemonViewHolder(view)
+        return PokemonViewHolder(parent)
     }
 }
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PTK Poke Api Test</string>
+
+    <string name="error_loading_pokemons">Error - tap to retry</string>
 </resources>

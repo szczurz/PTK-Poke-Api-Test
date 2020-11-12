@@ -6,6 +6,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pkurkowski.pokeapi.R
+import com.pkurkowski.pokeapi.presentation.adapter.PokemonAdapter
+import com.pkurkowski.pokeapi.presentation.adapter.PokemonLoadStateAdapter
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -22,13 +24,19 @@ class PokemonListActivity: AppCompatActivity()  {
         setContentView(R.layout.activity_pokemon_list)
 
         val adapter = PokemonAdapter()
-        recyclerView.adapter = adapter
+        recyclerView.adapter = adapter.withLoadStateFooter(PokemonLoadStateAdapter(adapter::retry))
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
+
             viewModel.pagingFlow.collectLatest {
                 adapter.submitData(it)
             }
+
+            adapter.loadStateFlow.collectLatest {
+
+            }
+
         }
     }
 

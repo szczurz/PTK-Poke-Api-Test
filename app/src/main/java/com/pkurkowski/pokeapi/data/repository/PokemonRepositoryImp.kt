@@ -8,6 +8,7 @@ import com.pkurkowski.pokeapi.domain.PokemonData
 import com.pkurkowski.pokeapi.domain.PokemonRepository
 import com.pkurkowski.pokeapi.domain.PokemonResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class PokemonRepositoryImp(
@@ -19,12 +20,20 @@ class PokemonRepositoryImp(
     override suspend fun getPokemonList(limit: Int, offset: Int): PokemonResponse {
         return withContext(Dispatchers.IO) {
             api.getPokemons(limit, offset).execute().body()!!.let {
+
+                 if(offset < 110) {
                 PokemonResponse.Success(
                     hasNext = it.results.size + offset < it.count,
                     data = it.results.mapIndexed { index, pokemonModel ->
                         Pokemon(index + offset, pokemonModel.name, PokemonData.Empty)
                     }
                 )
+                } else {
+                     delay(1000L)
+                    PokemonResponse.Fail( Exception("Booom"))
+                }
+
+
             }
         }
     }
