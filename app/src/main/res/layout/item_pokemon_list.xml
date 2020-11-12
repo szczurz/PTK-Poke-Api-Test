@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:padding="@dimen/standard_margin"
+    >
+
+    <ImageView
+        android:id="@+id/iconImageView"
+        android:layout_width="@dimen/minimum_click_size"
+        android:layout_height="@dimen/minimum_click_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        style="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintStart_toEndOf="@+id/iconImageView"
+        app:layout_constraintEnd_toStartOf="@+id/idTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="SomeVery loongss nameee to test elip sisss"
+        />
+
+    <TextView
+        android:id="@+id/idTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:maxEms="4"
+        android:paddingStart="@dimen/standard_margin"
+        style="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintStart_toEndOf="@+id/nameTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:text="123"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
