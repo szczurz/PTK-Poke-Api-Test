@@ -20,7 +20,10 @@ class PokemonListViewModel(
 
 
     val pagingFlow = Pager(
-        PagingConfig(pageSize = 1, prefetchDistance = 2)
+        PagingConfig(
+            pageSize = PokemonPagingSource.pokemonsPerPage,
+            prefetchDistance = PokemonPagingSource.pokemonsPerPage * 2
+        )
     ) {
         PokemonPagingSource(repository)
     }.flow.cachedIn(viewModelScope)

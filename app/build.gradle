@@ -59,9 +59,7 @@ dependencies {
 
     implementation "androidx.paging:paging-runtime-ktx:3.0.0-alpha09"
 
-
-
-//    implementation("com.squareup.moshi:moshi:1.11.0")
+    implementation "com.jakewharton.timber:timber:4.7.1"
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

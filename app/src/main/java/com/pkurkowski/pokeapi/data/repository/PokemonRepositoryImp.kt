@@ -20,7 +20,7 @@ class PokemonRepositoryImp(
         return withContext(Dispatchers.IO) {
             api.getPokemons(limit, offset).execute().body()!!.let {
                 PokemonResponse.Success(
-                    count = it.count,
+                    hasNext = it.results.size + offset < it.count,
                     data = it.results.mapIndexed { index, pokemonModel ->
                         Pokemon(index + offset, pokemonModel.name, PokemonData.Empty)
                     }
