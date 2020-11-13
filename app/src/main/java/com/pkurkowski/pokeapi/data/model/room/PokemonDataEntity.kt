@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "pokemonData")
 data class PokemonDataEntity(
-    @PrimaryKey @ColumnInfo(name = "id") val id: Int,
+    @PrimaryKey @ColumnInfo(name = "pokemonId") val pokemonId: Int,
     val baseExperience: Int,
     val height: Int,
     val weight: Int,

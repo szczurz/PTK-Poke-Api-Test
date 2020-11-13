@@ -9,7 +9,7 @@ import org.koin.dsl.module
 val applicationModule = module {
     single<PokemonRepository> {
             PokemonRepositoryImp(
-                get(), get(), get()
+                get(), get()
             )
     }
     viewModel { PokemonListViewModel(get(), get()) }

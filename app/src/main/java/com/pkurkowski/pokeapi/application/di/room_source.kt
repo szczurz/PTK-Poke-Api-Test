@@ -13,5 +13,4 @@ val roomDataSourceModule = module {
     }
 
     single { get<PokemonDatabase>().pokemonDao() }
-    single { get<PokemonDatabase>().pokemonDataDao() }
 }

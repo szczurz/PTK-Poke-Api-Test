@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(indices = [Index(value = ["name"], unique = true)], tableName = "pokemon")
 data class PokemonEntity(
-    @PrimaryKey val id:Int,
+    @PrimaryKey @ColumnInfo(name = "pokemonId")  val pokemonId:Int,
     @ColumnInfo(name = "name") val name: String,
 )
 
