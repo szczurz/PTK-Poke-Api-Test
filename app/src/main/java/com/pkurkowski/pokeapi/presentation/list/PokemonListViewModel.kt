@@ -23,7 +23,7 @@ class PokemonListViewModel(
         PokemonPagingSource(repository)
     }.flow.cachedIn(viewModelScope)
 
-    init {
+    fun startInitialState() = action {
         viewModelScope.launch {
             pagingData.collect { data ->
                 action {
