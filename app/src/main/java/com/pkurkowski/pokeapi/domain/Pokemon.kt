@@ -1,7 +1,8 @@
 package com.pkurkowski.pokeapi.domain
 
 data class Pokemon(
-    val id: Int,
+    val index: Int,
+    val pokemonId: Int?,
     val name: String,
     val data: PokemonData,
 )

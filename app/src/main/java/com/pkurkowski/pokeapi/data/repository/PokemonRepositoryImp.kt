@@ -1,6 +1,7 @@
 package com.pkurkowski.pokeapi.data.repository
 
 import com.pkurkowski.pokeapi.data.model.moshi.toEntity
+import com.pkurkowski.pokeapi.data.model.moshi.toPokemon
 import com.pkurkowski.pokeapi.data.model.retrofit.PokeApiInterface
 import com.pkurkowski.pokeapi.data.model.room.*
 import com.pkurkowski.pokeapi.domain.*
@@ -27,6 +28,7 @@ class PokemonRepositoryImp(
                 try {
                     Timber.d("retrofit pokemon list read offset:  $offset")
                     val response = api.getPokemons(limit, offset).execute()
+
                     when (response.isSuccessful) {
                         false -> {
                             PokemonsResponse.Fail(Exception("Call unsuccessful response: $response"))
@@ -36,7 +38,7 @@ class PokemonRepositoryImp(
                             val pokemonData = response.body()!!
                             pokemonDao.insertPokemons(
                                 pokemonData.results.mapIndexed { index, pokemonModel ->
-                                    PokemonEntity(index + offset, pokemonModel.name)
+                                    pokemonModel.toEntity(index + offset)
                                 }
                             )
                             pokemonDao.insertDatabaseState(
@@ -48,7 +50,7 @@ class PokemonRepositoryImp(
                             PokemonsResponse.Success(
                                 hasNext = pokemonData.results.size + offset < pokemonData.count,
                                 data = pokemonData.results.mapIndexed { index, pokemonModel ->
-                                    Pokemon(index + offset, pokemonModel.name, PokemonData.Empty)
+                                    pokemonModel.toPokemon(index + offset)
                                 }
                             )
                         }

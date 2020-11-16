@@ -11,6 +11,7 @@ import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pkurkowski.pokeapi.R
+import com.pkurkowski.pokeapi.domain.PokemonData
 import com.pkurkowski.pokeapi.presentation.adapter.PokemonAdapter
 import com.pkurkowski.pokeapi.presentation.adapter.PokemonLoadStateAdapter
 import io.uniflow.androidx.flow.onStates
@@ -49,6 +50,17 @@ class PokemonListActivity : AppCompatActivity() {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     //viewModel.requestUpdate(layoutManager.findFirstCompletelyVisibleItemPosition())
+
+                    val visibleIndex = layoutManager.findFirstCompletelyVisibleItemPosition()
+
+                    if(adapter.peek(visibleIndex)?.data is PokemonData.Empty) {
+                        viewModel.requestPokemonUpdate(visibleIndex)
+                    }
+
+//                    for (i in layoutManager.findFirstCompletelyVisibleItemPosition()..layoutManager.findLastCompletelyVisibleItemPosition()) {
+//                        if(adapter.peek(i)?.data is PokemonData.Empty)
+//                    }
+
                 }
 
             }

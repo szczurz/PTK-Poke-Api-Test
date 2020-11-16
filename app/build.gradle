@@ -19,8 +19,17 @@ android {
     }
 
     buildTypes {
+
+        debug {
+            minifyEnabled false
+            buildConfigField("String", "POKE_API_URL", "\"https://pokeapi.co/api/v2/\"")
+            buildConfigField("String", "POKE_IMAGE_PATTERN_URL", "\"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/ID_TO_REPLACE.png\"")
+        }
+
         release {
             minifyEnabled false
+            buildConfigField("String", "POKE_API_URL", "\"https://pokeapi.co/api/v2/\"")
+            buildConfigField("String", "POKE_IMAGE_PATTERN_URL", "\"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/ID_TO_REPLACE.png\"")
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -66,6 +75,9 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:3.0.0-alpha09"
 
     implementation "com.jakewharton.timber:timber:4.7.1"
+
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     testImplementation 'junit:junit:4.13.1'
 

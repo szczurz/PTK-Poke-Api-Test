@@ -1,5 +1,6 @@
 package com.pkurkowski.pokeapi.application.di
 
+import com.pkurkowski.pokeapi.BuildConfig
 import com.pkurkowski.pokeapi.data.model.retrofit.PokeApiInterface
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
@@ -18,7 +19,7 @@ val remoteDataSourceModule = module {
 
     //Get PokeApi
     single { Retrofit.Builder()
-        .baseUrl("https://pokeapi.co/api/v2/")
+        .baseUrl(BuildConfig.POKE_API_URL)
         .client(get())
         .addConverterFactory(MoshiConverterFactory.create())
         .build().create(PokeApiInterface::class.java)

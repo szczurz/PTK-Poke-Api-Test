@@ -38,6 +38,11 @@ class PokemonListViewModel(
             }
         }
     }
+
+    fun requestPokemonUpdate(pokemonId: Int) = action {
+        repository.requestPokemonUpdate(pokemonId)
+    }
+
 }
 
 enum class AdapterLoadStateEnum {

@@ -24,11 +24,11 @@ interface PokemonDao {
     fun insertPokemonData(pokemonData: PokemonDataEntity)
 
     @Transaction
-    @Query("SELECT * FROM pokemon ORDER BY pokemonId LIMIT :limit OFFSET :offset ")
+    @Query("SELECT * FROM pokemon ORDER BY pokemonIndex LIMIT :limit OFFSET :offset ")
     fun getPokemons(limit: Int, offset: Int): List<PokemonWithData>
 
-    @Query("SELECT * FROM pokemon WHERE pokemonId = :id")
-    fun getPokemon(id: Int): PokemonWithData
+    @Query("SELECT * FROM pokemon WHERE pokemonIndex = :index")
+    fun getPokemon(index: Int): PokemonWithData
 
 }
 
@@ -43,7 +43,8 @@ data class PokemonWithData(
 )
 
 fun PokemonWithData.toPokemon() = Pokemon(
-    id = this.pokemon.pokemonId,
+    index = this.pokemon.pokemonIndex,
+    pokemonId = this.pokemon.pokemonId,
     name = this.pokemon.name,
     data = when(data) {
         null -> PokemonData.Empty
