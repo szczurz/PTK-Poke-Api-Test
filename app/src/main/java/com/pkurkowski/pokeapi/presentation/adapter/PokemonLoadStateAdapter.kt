@@ -15,7 +15,6 @@ import com.pkurkowski.pokeapi.R
 class PokemonLoadStateAdapter(private val retry: () -> Unit) :
     LoadStateAdapter<PokemonLoadStateAdapter.PokemonLoadStateViewHolder>() {
 
-
     class PokemonLoadStateViewHolder(
         parent: ViewGroup
     ) : RecyclerView.ViewHolder(

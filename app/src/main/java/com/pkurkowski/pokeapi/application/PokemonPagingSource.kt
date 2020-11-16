@@ -3,16 +3,14 @@ package com.pkurkowski.pokeapi.application
 import androidx.paging.PagingSource
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.domain.PokemonRepository
-import com.pkurkowski.pokeapi.domain.PokemonResponse
+import com.pkurkowski.pokeapi.domain.PokemonsResponse
 import timber.log.Timber
-import java.lang.Exception
 
 class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int, Pokemon>() {
 
     companion object {
         const val pokemonsPerPage = 50
     }
-
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
         val page = params.key ?: 0
@@ -22,12 +20,12 @@ class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int,
         )
 
         return when (response) {
-            is PokemonResponse.Success -> LoadResult.Page(
+            is PokemonsResponse.Success -> LoadResult.Page(
                 data = response.data,
                 prevKey = null,
                 nextKey = if (response.hasNext) page + 1 else null
             )
-            is PokemonResponse.Fail -> LoadResult.Error(
+            is PokemonsResponse.Fail -> LoadResult.Error(
                 response.reason
             )
         }

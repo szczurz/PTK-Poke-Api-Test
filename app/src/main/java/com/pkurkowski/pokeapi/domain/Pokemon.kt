@@ -12,9 +12,8 @@ sealed class PokemonData {
     data class PokemonBasicData(
         val baseExperience: Int,
         val height: Int,
-        val isDefault: Boolean,
-        val order: Int,
         val weight: Int,
-        val sprites: PokemonSprites
-    )
+        val isDefault: Boolean,
+        val sprites: PokemonSprites?
+    ): PokemonData()
 }

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.pkurkowski.pokeapi.R
 import com.pkurkowski.pokeapi.domain.Pokemon
+import com.pkurkowski.pokeapi.domain.PokemonData
 
 class PokemonAdapter :
     PagingDataAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(PokemonComparator) {
@@ -22,7 +23,9 @@ class PokemonAdapter :
         private val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
 
         fun bind(pokemon: Pokemon?) {
-            nameTextView.text = pokemon?.name ?: ""
+            nameTextView.text = pokemon?.let {
+                it.name + if(it.data is PokemonData.PokemonBasicData) it.data.weight else ""
+            } ?: ""
             idTextView.text = pokemon?.id?.toString() ?: ""
         }
 
@@ -35,6 +38,9 @@ class PokemonAdapter :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
         return PokemonViewHolder(parent)
     }
+
+
+
 }
 
 object PokemonComparator : DiffUtil.ItemCallback<Pokemon>() {

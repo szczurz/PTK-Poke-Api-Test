@@ -12,11 +12,7 @@ data class PokemonDataEntity(
     val height: Int,
     val weight: Int,
     val isDefault: Boolean,
-    @Embedded val sprites: PokemonSprites
-)
 
-
-data class PokemonSprites(
     val backDefault: String?,
     val backShiny: String?,
     val frontDefault: String?,
@@ -24,5 +20,7 @@ data class PokemonSprites(
     val backFemale: String?,
     val backShinyFemale: String?,
     val frontFemale: String?,
-    val frontShinyFemale: String?
+    val frontShinyFemale: String?,
 )
+
+

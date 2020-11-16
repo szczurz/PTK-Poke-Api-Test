@@ -1,6 +1,8 @@
 package com.pkurkowski.pokeapi.data.model.room
 
 import androidx.room.*
+import com.pkurkowski.pokeapi.domain.Pokemon
+import com.pkurkowski.pokeapi.domain.PokemonData
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -23,10 +25,10 @@ interface PokemonDao {
 
     @Transaction
     @Query("SELECT * FROM pokemon ORDER BY pokemonId LIMIT :limit OFFSET :offset ")
-    fun getPokemon(limit: Int, offset: Int): List<PokemonWithData>
+    fun getPokemons(limit: Int, offset: Int): List<PokemonWithData>
 
-//    @Query("SELECT * FROM pokemon ORDER BY id")
-//    fun loadPokemons(): Flow<PokemonEntity>
+    @Query("SELECT * FROM pokemon WHERE pokemonId = :id")
+    fun getPokemon(id: Int): PokemonWithData
 
 }
 
@@ -38,4 +40,19 @@ data class PokemonWithData(
         entityColumn = "pokemonId"
     )
     val data: PokemonDataEntity?
+)
+
+fun PokemonWithData.toPokemon() = Pokemon(
+    id = this.pokemon.pokemonId,
+    name = this.pokemon.name,
+    data = when(data) {
+        null -> PokemonData.Empty
+        else -> PokemonData.PokemonBasicData(
+            baseExperience = data.baseExperience,
+            height = data.height,
+            weight = data.weight,
+            isDefault = data.isDefault,
+            sprites = null,
+        )
+    }
 )
