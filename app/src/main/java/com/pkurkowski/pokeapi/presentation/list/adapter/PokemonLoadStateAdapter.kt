@@ -1,11 +1,10 @@
-package com.pkurkowski.pokeapi.presentation.adapter
+package com.pkurkowski.pokeapi.presentation.list.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.constraintlayout.widget.Group
 import androidx.core.view.isInvisible
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter

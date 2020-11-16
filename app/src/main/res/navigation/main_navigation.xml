@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/pokemonListFragment">
+
+    <fragment
+        android:id="@+id/pokemonListFragment"
+        android:name="com.pkurkowski.pokeapi.presentation.list.PokemonListFragment">
+        <action
+            android:id="@+id/showDetail"
+            app:destination="@id/pokemonDetailFragment">
+            <argument
+                android:name="id"
+                app:argType="integer" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/pokemonDetailFragment"
+        android:name="com.pkurkowski.pokeapi.presentation.detail.DetailFragment">
+        <argument
+            android:name="id"
+            app:argType="integer" />
+    </fragment>
+
+
+</navigation>
