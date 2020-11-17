@@ -16,7 +16,7 @@ fun PokemonModel.toEntity(index: Int): PokemonEntity {
     return PokemonEntity(
         pokemonIndex = index,
         pokemonId = remoteId,
-        name = name
+        name = name.toUpperCase()
     )
 }
 
@@ -25,7 +25,7 @@ fun PokemonModel.toPokemon(index: Int): Pokemon {
     return Pokemon(
         index = index,
         pokemonId = remoteId,
-        name = name,
+        name = name.toUpperCase(),
         data = PokemonData.Empty
     )
 }

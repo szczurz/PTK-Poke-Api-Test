@@ -2,9 +2,7 @@ package com.pkurkowski.pokeapi.data.model.room
 
 import androidx.room.*
 import com.pkurkowski.pokeapi.data.model.moshi.toEntity
-import com.pkurkowski.pokeapi.domain.Pokemon
-import com.pkurkowski.pokeapi.domain.PokemonData
-import com.pkurkowski.pokeapi.domain.PokemonSprites
+import com.pkurkowski.pokeapi.domain.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -55,16 +53,27 @@ fun PokemonWithData.toPokemon() = Pokemon(
             height = data.height,
             weight = data.weight,
             isDefault = data.isDefault,
-            sprites = PokemonSprites(
-                backDefault = this.data.backDefault,
-                backShiny = this.data.backShiny,
-                frontDefault = this.data.frontDefault,
-                frontShiny = this.data.frontShiny,
-                backFemale = this.data.backFemale,
-                backShinyFemale = this.data.backShinyFemale,
-                frontFemale = this.data.frontFemale,
-                frontShinyFemale = this.data.frontShinyFemale,
-            )
+            sprites = this.toPokemonSprites()
         )
     }
 )
+
+fun PokemonWithData.toPokemonSprites(): PokemonSprites {
+    return when (this.data) {
+        null -> PokemonSprites(mapOf())
+        else -> {
+            val tempMap = mutableMapOf<SpriteDescription, String>()
+            with(this.data) {
+                backDefault?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Male, Style.Regular), it) }
+                backShiny?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Male, Style.Shiny), it) }
+                frontDefault?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Male, Style.Regular), it) }
+                frontShiny?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Male, Style.Shiny), it) }
+                backFemale?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Female, Style.Regular), it) }
+                backShinyFemale?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Female, Style.Shiny), it) }
+                frontFemale?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Female, Style.Regular), it) }
+                frontShinyFemale?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Female, Style.Shiny), it) }
+            }
+            PokemonSprites(tempMap.toMap())
+        }
+    }
+}

@@ -15,6 +15,13 @@ sealed class PokemonData {
         val height: Int,
         val weight: Int,
         val isDefault: Boolean,
-        val sprites: PokemonSprites?
+        val sprites: PokemonSprites
     ): PokemonData()
 }
+
+
+fun Pokemon.getSBasicDataOrNull(): PokemonData.PokemonBasicData? =
+    when(this.data) {
+        PokemonData.Empty -> null
+        is PokemonData.PokemonBasicData -> this.data
+    }

@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">PTK Poke Api Test</string>
-
     <string name="error_loading_pokemons">Error - tap to retry</string>
+
+    <string name="pokemon_data_missing_message">Missing detail pokemon information</string>
+    <string name="pokemon_data_description">Pokemon data:\nbaseExperience: %1$d\nheight: %2$d\nweight: %3$d\nisDefault: %4$b</string>
+
+
 </resources>
