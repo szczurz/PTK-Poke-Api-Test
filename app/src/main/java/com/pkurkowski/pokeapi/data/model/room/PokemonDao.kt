@@ -1,8 +1,10 @@
 package com.pkurkowski.pokeapi.data.model.room
 
 import androidx.room.*
+import com.pkurkowski.pokeapi.data.model.moshi.toEntity
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.domain.PokemonData
+import com.pkurkowski.pokeapi.domain.PokemonSprites
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,8 +29,8 @@ interface PokemonDao {
     @Query("SELECT * FROM pokemon ORDER BY pokemonIndex LIMIT :limit OFFSET :offset ")
     fun getPokemons(limit: Int, offset: Int): List<PokemonWithData>
 
-    @Query("SELECT * FROM pokemon WHERE pokemonIndex = :index")
-    fun getPokemon(index: Int): PokemonWithData
+    @Query("SELECT * FROM pokemon WHERE pokemonId = :pokemonId")
+    fun getPokemon(pokemonId: Int): PokemonWithData?
 
 }
 
@@ -53,7 +55,16 @@ fun PokemonWithData.toPokemon() = Pokemon(
             height = data.height,
             weight = data.weight,
             isDefault = data.isDefault,
-            sprites = null,
+            sprites = PokemonSprites(
+                backDefault = this.data.backDefault,
+                backShiny = this.data.backShiny,
+                frontDefault = this.data.frontDefault,
+                frontShiny = this.data.frontShiny,
+                backFemale = this.data.backFemale,
+                backShinyFemale = this.data.backShinyFemale,
+                frontFemale = this.data.frontFemale,
+                frontShinyFemale = this.data.frontShinyFemale,
+            )
         )
     }
 )

@@ -64,6 +64,9 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.11.0'
+
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:1.11.0"
 
     implementation "io.uniflow:uniflow-core:$uniflow_version"
     implementation "io.uniflow:uniflow-android:$uniflow_version"

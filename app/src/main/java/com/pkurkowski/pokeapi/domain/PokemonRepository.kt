@@ -2,6 +2,7 @@ package com.pkurkowski.pokeapi.domain
 
 interface PokemonRepository {
     suspend fun getPokemonList(limit: Int, offset: Int): PokemonsResponse
+    suspend fun requestPokemon(id: Int): PokemonResponse
     suspend fun requestPokemonUpdate(id: Int): PokemonResponse
 }
 

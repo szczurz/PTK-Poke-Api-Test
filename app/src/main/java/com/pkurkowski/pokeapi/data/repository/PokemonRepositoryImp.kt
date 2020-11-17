@@ -63,6 +63,18 @@ class PokemonRepositoryImp(
         }
     }
 
+    override suspend fun requestPokemon(id: Int): PokemonResponse {
+        return withContext(Dispatchers.IO) {
+            pokemonDao.getPokemon(id)
+                ?.let {
+                    if(it.data != null) {
+                        PokemonResponse.Success(it.toPokemon())
+                    } else null
+                }
+                ?: requestPokemonUpdate(id)
+        }
+    }
+
     override suspend fun requestPokemonUpdate(id: Int): PokemonResponse {
         return withContext(Dispatchers.IO) {
             try {
@@ -71,7 +83,7 @@ class PokemonRepositoryImp(
                 when (response.isSuccessful) {
 
                     false -> {
-                        Timber.d("pokemonData response: $response")
+                        Timber.e("pokemonData error response: $response")
                         PokemonResponse.Fail(Exception("Call unsuccessful response: $response"))
                     }
 
@@ -83,9 +95,13 @@ class PokemonRepositoryImp(
                         pokemonDao.insertPokemonData(
                             pokemonData.toEntity(id)
                         )
-                        PokemonResponse.Success(
-                            pokemonDao.getPokemon(id).toPokemon()
-                        )
+
+                        pokemonDao.getPokemon(id)?.toPokemon()
+                            ?.let {
+                                PokemonResponse.Success(it)
+                            }
+                            ?: PokemonResponse.Fail(Exception("error getting updated pokemon from database"))
+
                     }
                 }
             } catch (e: Exception) {

@@ -1,26 +1,30 @@
 package com.pkurkowski.pokeapi.data.model.moshi
 
 import com.pkurkowski.pokeapi.data.model.room.PokemonDataEntity
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class PokemonDataModel(
     val name: String,
-    val baseExperience: Int,
+    @Json(name = "base_experience") val baseExperience: Int,
     val height: Int,
-    val isDefault: Boolean,
+    @Json(name = "is_default") val isDefault: Boolean,
     val order: Int,
     val weight: Int,
     val sprites: PokemonSpritesModel
 )
 
+@JsonClass(generateAdapter = true)
 data class PokemonSpritesModel(
-    val backDefault: String?,
-    val backShiny: String?,
-    val frontDefault: String?,
-    val frontShiny: String?,
-    val backFemale: String?,
-    val backShinyFemale: String?,
-    val frontFemale: String?,
-    val frontShinyFemale: String?
+    @Json(name = "back_default") val backDefault: String?,
+    @Json(name = "back_shiny") val backShiny: String?,
+    @Json(name = "front_default") val frontDefault: String?,
+    @Json(name = "front_shiny") val frontShiny: String?,
+    @Json(name = "back_female") val backFemale: String?,
+    @Json(name = "back_shiny_female") val backShinyFemale: String?,
+    @Json(name = "front_female") val frontFemale: String?,
+    @Json(name = "front_shiny_female") val frontShinyFemale: String?
 )
 
 fun PokemonDataModel.toEntity(id: Int) = PokemonDataEntity(
