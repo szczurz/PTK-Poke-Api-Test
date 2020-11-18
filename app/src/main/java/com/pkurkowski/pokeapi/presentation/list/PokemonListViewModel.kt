@@ -9,10 +9,8 @@ import io.uniflow.androidx.flow.AndroidDataFlow
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -20,9 +18,9 @@ class PokemonListViewModel(
     private val repository: PokemonRepository
 ) : AndroidDataFlow() {
 
-    val updatePokemonChannel = Channel<Pokemon>(
-        capacity = 12,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    val updatePokemonChannel = Channel<Int>(
+        capacity = 0,
+        onBufferOverflow = BufferOverflow.SUSPEND
     )
 
     private var pokemonPagingSource: PokemonPagingSource? = null
@@ -36,21 +34,28 @@ class PokemonListViewModel(
     ) {
         pokemonPagingSource = PokemonPagingSource(repository)
         pokemonPagingSource!!
-    }.flow.cachedIn(viewModelScope).map {
-
-        Timber.tag("ZZZZZ").d("------------------- BOOM pagindData Emission")
-
-        it
-    }
+    }.flow.cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {
-            updatePokemonChannel.consumeAsFlow().collect { pokemon ->
-                Timber.d("POKEMON to update: ${pokemon.name}")
-                var result = pokemon.pokemonId?.let { repository.requestPokemon(it) }
-                Timber.d("POKEMON updated result: $result")
+            updatePokemonChannel.consumeAsFlow()
+                .map {
+                    repository.requestPokemon(it)
+                }.debounce(1000L)
+                .collect {
+                pokemonPagingSource?.invalidate()
             }
         }
+
+//        viewModelScope.launch {
+//
+//            while (isActive) {
+//                delay(3000L)
+//                Timber.tag("ZZZZZ").d("INVALIDATE !!!")
+//                pokemonPagingSource?.invalidate()
+//            }
+//
+//        }
     }
 
     fun startInitialState() = action {
@@ -64,7 +69,7 @@ class PokemonListViewModel(
     }
 
     fun pokemonClicked(id: Int) {
-        pokemonPagingSource?.invalidate()
+        //pokemonPagingSource?.invalidate()
     }
 
     fun listStateChanged(state: AdapterLoadStateEnum) = action { currentState ->

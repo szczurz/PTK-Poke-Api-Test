@@ -3,7 +3,9 @@ package com.pkurkowski.pokeapi.presentation.list.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -19,7 +21,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.map
 
-class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Channel<Pokemon>) :
+class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Channel<Int>) :
     PagingDataAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(PokemonComparator) {
 
     val loadStateEnum = loadStateFlow
@@ -44,14 +46,16 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
         private val indexTextView: TextView = itemView.findViewById(R.id.indexTextView)
         private val idTextView: TextView = itemView.findViewById(R.id.idTextView)
         private val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
+        private val progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
 
         private var job: Job? = null
-
 
         fun bind(pokemon: Pokemon?) {
             pokemon?.let { pokemon ->
                 itemView.setOnClickListener { clickListener.invoke(pokemon) }
             }
+
+            progressBar.isVisible = false
 
             nameTextView.text = pokemon?.name ?: ""
             indexTextView.text = pokemon?.index?.toString() ?: "--"
@@ -70,10 +74,11 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
         }
 
         private fun sendUpdateRequestIfNeeded(pokemon: Pokemon) {
-            if (pokemon.data == PokemonData.Empty) {
+            if (pokemon.data == PokemonData.Empty && pokemon.pokemonId != null) {
                 job = CoroutineScope(Dispatchers.Main).launch {
                     delay(DELAY_TO_PROCESS_UPDATE_MILLISECONDS)
-                    updateChannel.send(pokemon)
+                    updateChannel.send(pokemon.pokemonId)
+                    progressBar.isVisible = true
                 }
             }
         }
@@ -110,13 +115,14 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
 
 object PokemonComparator : DiffUtil.ItemCallback<Pokemon>() {
     override fun areItemsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
-        // Id is unique.
+        // index unique.
         return oldItem.index == newItem.index
     }
 
     override fun areContentsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
         //todo
-        return false
+        //return oldItem.index == newItem.index
+        return oldItem.index == newItem.index && oldItem.data.javaClass == newItem.data.javaClass
     }
 
 

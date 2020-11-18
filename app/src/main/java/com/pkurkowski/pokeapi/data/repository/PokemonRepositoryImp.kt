@@ -44,6 +44,7 @@ class PokemonRepositoryImp(
                                     pokemonModel.toEntity(index + offset)
                                 }
                             )
+                            //todo review pokemonLoadedCount works
                             pokemonDao.insertDatabaseState(
                                 DatabaseStateEntity(
                                     pokemonCount = pokemonData.count,

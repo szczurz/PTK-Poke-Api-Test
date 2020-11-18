@@ -25,22 +25,11 @@ class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int,
             pokemonToLoad,
             pokemonIndex.coerceAtLeast(0)
         )
-
-
         return when (response) {
             is PokemonsResponse.Success -> {
-
-                //if(pokemonIndex < pokemonsPerPage) null else pokemonIndex - pokemonsPerPage
-
                 val prevKey = if (pokemonIndex <= 0) null
                 else pokemonIndex - pokemonsPerPage
-
                 val nextKey = if (response.hasNext) pokemonIndex + pokemonsPerPage else null
-
-                Timber.tag("ZZZZZ").d("PokemonPagingSource load page: $pokemonIndex")
-                Timber.tag("ZZZZZ").d("prevKey: $prevKey nextKey: $nextKey")
-
-
                 LoadResult.Page(
                     data = response.data,
                     prevKey = prevKey,
@@ -56,23 +45,9 @@ class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int,
 
     @ExperimentalPagingApi
     override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? {
-
-        val result = state.anchorPosition?.minus(anchorPointBuffer)
-
-        var closest: Int? = null
-        state.anchorPosition?.let {
-                closest = state.closestItemToPosition(it)?.index?.minus(anchorPointBuffer)
+        return state.anchorPosition?.let {
+            state.closestItemToPosition(it)?.index?.minus(anchorPointBuffer)
         }
-
-
-
-        //val closest = state.getClosestItemToPosition(anchorPosition)?.id
-
-        Timber.tag("ZZZZZ")
-            .d("PokemonPagingSource getRefreshKey anchorPosition: ${state.anchorPosition}  closest: $closest")
-
-
-        return closest
     }
 
     override val keyReuseSupported: Boolean
