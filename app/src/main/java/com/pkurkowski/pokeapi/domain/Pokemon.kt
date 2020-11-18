@@ -5,7 +5,7 @@ data class Pokemon(
     val pokemonId: Int?,
     val name: String,
     val data: PokemonData,
-)
+    )
 
 
 sealed class PokemonData {

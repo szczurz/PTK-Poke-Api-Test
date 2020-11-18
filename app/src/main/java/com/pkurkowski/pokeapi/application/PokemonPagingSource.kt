@@ -8,11 +8,10 @@ import com.pkurkowski.pokeapi.domain.PokemonRepository
 import com.pkurkowski.pokeapi.domain.PokemonsResponse
 import timber.log.Timber
 
-class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int, Pokemon>() {
+class PokemonPagingSource(private val repository: PokemonRepository) : PagingSource<Int, Pokemon>() {
 
     companion object {
         const val pokemonsPerPage = 50
-        const val anchorPointBuffer = 20
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
@@ -27,8 +26,7 @@ class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int,
         )
         return when (response) {
             is PokemonsResponse.Success -> {
-                val prevKey = if (pokemonIndex <= 0) null
-                else pokemonIndex - pokemonsPerPage
+                val prevKey = if (pokemonIndex <= 0) null else pokemonIndex - pokemonsPerPage
                 val nextKey = if (response.hasNext) pokemonIndex + pokemonsPerPage else null
                 LoadResult.Page(
                     data = response.data,
@@ -42,14 +40,4 @@ class PokemonPagingSource(val repository: PokemonRepository) : PagingSource<Int,
         }
 
     }
-
-    @ExperimentalPagingApi
-    override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? {
-        return state.anchorPosition?.let {
-            state.closestItemToPosition(it)?.index?.minus(anchorPointBuffer)
-        }
-    }
-
-    override val keyReuseSupported: Boolean
-        get() = true
 }

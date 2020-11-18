@@ -19,6 +19,7 @@ import com.pkurkowski.pokeapi.R
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.presentation.list.adapter.PokemonAdapter
 import com.pkurkowski.pokeapi.presentation.list.adapter.PokemonLoadStateAdapter
+import io.uniflow.androidx.flow.onEvents
 import io.uniflow.androidx.flow.onStates
 import kotlinx.android.synthetic.main.fragment_pokemon_list.*
 import kotlinx.coroutines.flow.collect
@@ -52,11 +53,17 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         layoutManager = LinearLayoutManager(requireContext())
-        
+
         errorTextView.setOnClickListener { adapter.retry() }
         errorImageView.setOnClickListener { adapter.retry() }
         pokemonRecyclerView.adapter = adapter
         pokemonRecyclerView.layoutManager = layoutManager
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            adapter.loadStateEnum.collectLatest {
+                viewModel.listStateChanged(it)
+            }
+        }
 
         onStates(viewModel) { state ->
             if (state is PokemonListState.InitialFlowAssign) {
@@ -69,9 +76,13 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
             setErrorViewsInvisibility(state !is PokemonListState.ErrorAndEmptyData)
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            adapter.loadStateEnum.collectLatest {
-                viewModel.listStateChanged(it)
+        onEvents(viewModel) {
+            when (val event = it.take()) {
+                is PokemonListEvent.PokemonUpdatedEvent -> adapter.updatePokemon(
+                    event.pokemonIndex,
+                    event.data
+                )
+                is PokemonListEvent.PokemonSelectedEvent -> viewModel.sendPokemonClickedEvent(event.pokemonId)
             }
         }
     }
@@ -95,14 +106,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     }
 
     private fun onPokemonClicked(pokemon: Pokemon) {
-
-        pokemon.pokemonId?.let { viewModel.pokemonClicked(it) }
-
-//        pokemon.pokemonId?.let {
-//            findNavController().navigate(
-//                PokemonListFragmentDirections.showDetail(it)
-//            )
-//        }
+        pokemon.pokemonId?.let { viewModel.sendPokemonClickedEvent(it) }
     }
 
     companion object {

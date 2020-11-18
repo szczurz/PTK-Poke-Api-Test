@@ -10,9 +10,6 @@ import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.pkurkowski.pokeapi.BuildConfig
 import com.pkurkowski.pokeapi.R
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.domain.PokemonData
@@ -21,8 +18,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.map
 
-class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Channel<Int>) :
-    PagingDataAdapter<Pokemon, PokemonAdapter.PokemonViewHolder>(PokemonComparator) {
+class PokemonAdapter(private val clickListener: (Pokemon) -> Unit, private val updateChannel: Channel<Int>) :
+    PagingDataAdapter<PokemonWithUpdate, PokemonAdapter.PokemonViewHolder>(PokemonComparator) {
 
     val loadStateEnum = loadStateFlow
         .map { it.refresh }
@@ -38,6 +35,12 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
             }
         }
 
+    fun updatePokemon(index: Int, data: PokemonData.PokemonBasicData) {
+        getItem(index)?.let {
+            it.update = data
+            notifyItemChanged(index)
+        }
+    }
 
     inner class PokemonViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.item_pokemon_list, parent, false)
@@ -50,39 +53,46 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
 
         private var job: Job? = null
 
-        fun bind(pokemon: Pokemon?) {
-            pokemon?.let { pokemon ->
-                itemView.setOnClickListener { clickListener.invoke(pokemon) }
-            }
+        fun bind(pokemon: PokemonWithUpdate?) {
+            job?.cancel()
 
+            nameTextView.text = pokemon?.original?.name ?: ""
+            indexTextView.text = pokemon?.original?.index.toString() ?: "--"
+            idTextView.text = pokemon?.original?.pokemonId?.toString() ?: "--"
             progressBar.isVisible = false
 
-            nameTextView.text = pokemon?.name ?: ""
-            indexTextView.text = pokemon?.index?.toString() ?: "--"
-            idTextView.text = pokemon?.pokemonId?.toString() ?: "--"
+            if (pokemon == null) {
+                itemView.setOnClickListener(null)
+            } else {
+                itemView.setOnClickListener { clickListener.invoke(pokemon.original) }
+            }
 
-            if(pokemon?.data is PokemonData.Empty) iconImageView.setImageDrawable(null)
-            else iconImageView.setImageResource(R.drawable.ic_baseline_sync_24)
+            val basicData: PokemonData.PokemonBasicData? = when {
+                pokemon?.update != null -> pokemon.update
+                else -> pokemon?.original?.data as? PokemonData.PokemonBasicData
+            }
 
-
-            job?.cancel()
-            pokemon?.also {sendUpdateRequestIfNeeded(it)}
+            if (basicData == null) {
+                sendUpdateRequestIfNeeded(pokemon?.original?.pokemonId)
+                iconImageView.setImageDrawable(null)
+            } else {
+                iconImageView.setImageResource(R.drawable.ic_baseline_sync_24)
+            }
         }
 
         fun unbind() {
             job?.cancel()
         }
 
-        private fun sendUpdateRequestIfNeeded(pokemon: Pokemon) {
-            if (pokemon.data == PokemonData.Empty && pokemon.pokemonId != null) {
+        private fun sendUpdateRequestIfNeeded(pokemonId: Int?) {
+            pokemonId?.let {
                 job = CoroutineScope(Dispatchers.Main).launch {
                     delay(DELAY_TO_PROCESS_UPDATE_MILLISECONDS)
-                    updateChannel.send(pokemon.pokemonId)
+                    updateChannel.send(it)
                     progressBar.isVisible = true
                 }
             }
         }
-
     }
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
@@ -100,8 +110,8 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
     }
 
     override fun onFailedToRecycleView(holder: PokemonViewHolder): Boolean {
-        return super.onFailedToRecycleView(holder)
         holder.unbind()
+        return super.onFailedToRecycleView(holder)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
@@ -113,16 +123,17 @@ class PokemonAdapter(val clickListener: (Pokemon) -> Unit, val updateChannel: Ch
     }
 }
 
-object PokemonComparator : DiffUtil.ItemCallback<Pokemon>() {
-    override fun areItemsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
+object PokemonComparator : DiffUtil.ItemCallback<PokemonWithUpdate>() {
+    override fun areItemsTheSame(oldItem: PokemonWithUpdate, newItem: PokemonWithUpdate): Boolean {
         // index unique.
-        return oldItem.index == newItem.index
+        return oldItem.original.index == newItem.original.index
     }
 
-    override fun areContentsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
-        //todo
-        //return oldItem.index == newItem.index
-        return oldItem.index == newItem.index && oldItem.data.javaClass == newItem.data.javaClass
+    override fun areContentsTheSame(
+        oldItem: PokemonWithUpdate,
+        newItem: PokemonWithUpdate
+    ): Boolean {
+        return oldItem == newItem
     }
 
 

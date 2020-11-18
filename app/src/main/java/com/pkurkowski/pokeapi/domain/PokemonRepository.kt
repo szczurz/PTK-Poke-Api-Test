@@ -13,5 +13,5 @@ sealed class PokemonsResponse {
 
 sealed class PokemonResponse {
     data class Fail(val reason: Throwable): PokemonResponse()
-    data class Success(val data: Pokemon): PokemonResponse()
+    data class Success(val pokemon: Pokemon): PokemonResponse()
 }

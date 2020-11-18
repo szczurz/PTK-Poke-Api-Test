@@ -3,16 +3,14 @@ package com.pkurkowski.pokeapi.presentation.list
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
 import com.pkurkowski.pokeapi.application.PokemonPagingSource
-import com.pkurkowski.pokeapi.domain.Pokemon
-import com.pkurkowski.pokeapi.domain.PokemonRepository
+import com.pkurkowski.pokeapi.domain.*
+import com.pkurkowski.pokeapi.presentation.list.adapter.PokemonWithUpdate
 import io.uniflow.androidx.flow.AndroidDataFlow
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class PokemonListViewModel(
     private val repository: PokemonRepository
@@ -23,39 +21,34 @@ class PokemonListViewModel(
         onBufferOverflow = BufferOverflow.SUSPEND
     )
 
-    private var pokemonPagingSource: PokemonPagingSource? = null
 
     private val pagingData = Pager(
         PagingConfig(
             pageSize = PokemonPagingSource.pokemonsPerPage,
             prefetchDistance = PokemonPagingSource.pokemonsPerPage,
-            enablePlaceholders = true
+            enablePlaceholders = false
         )
     ) {
-        pokemonPagingSource = PokemonPagingSource(repository)
-        pokemonPagingSource!!
-    }.flow.cachedIn(viewModelScope)
+        PokemonPagingSource(repository)
+    }.flow
+        .cachedIn(viewModelScope)
+        .map { it.map { pokemon -> PokemonWithUpdate(pokemon) } }
 
     init {
         viewModelScope.launch {
             updatePokemonChannel.consumeAsFlow()
                 .map {
                     repository.requestPokemon(it)
-                }.debounce(1000L)
+                }
                 .collect {
-                pokemonPagingSource?.invalidate()
-            }
+                    if (it is PokemonResponse.Success) {
+                        it.pokemon.getSBasicDataOrNull()?.let { basicData ->
+                            sendPokemonUpdateEvent(it.pokemon.index, basicData)
+                        }
+                    }
+                }
         }
 
-//        viewModelScope.launch {
-//
-//            while (isActive) {
-//                delay(3000L)
-//                Timber.tag("ZZZZZ").d("INVALIDATE !!!")
-//                pokemonPagingSource?.invalidate()
-//            }
-//
-//        }
     }
 
     fun startInitialState() = action {
@@ -68,8 +61,13 @@ class PokemonListViewModel(
         }
     }
 
-    fun pokemonClicked(id: Int) {
-        //pokemonPagingSource?.invalidate()
+
+    fun sendPokemonClickedEvent(pokemonId: Int) = action {
+        sendEvent(PokemonListEvent.PokemonSelectedEvent(pokemonId))
+    }
+
+    fun sendPokemonUpdateEvent(pokemonIndex: Int, data: PokemonData.PokemonBasicData) = action {
+        sendEvent(PokemonListEvent.PokemonUpdatedEvent(pokemonIndex, data))
     }
 
     fun listStateChanged(state: AdapterLoadStateEnum) = action { currentState ->
