@@ -15,6 +15,9 @@ class PokemonRepositoryImp(
 ) : PokemonRepository {
 
     override suspend fun getPokemonList(limit: Int, offset: Int): PokemonsResponse {
+
+        Timber.tag("ZZZZZ").d("-- Repo getPokemonList offset: $offset  limit: $limit")
+
         return withContext(Dispatchers.IO) {
             val state = pokemonDao.getState() ?: DatabaseStateEntity()
             if (state.pokemonLoadedCount >= offset + limit) {

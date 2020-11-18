@@ -34,7 +34,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     private val viewModel: PokemonListViewModel by viewModel()
 
     private val adapter: PokemonAdapter by lazy {
-        PokemonAdapter(::onPokemonClicked).apply {
+        PokemonAdapter(::onPokemonClicked, viewModel.updatePokemonChannel).apply {
             this.withLoadStateFooter(PokemonLoadStateAdapter(this::retry))
         }
     }
@@ -95,11 +95,14 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     }
 
     private fun onPokemonClicked(pokemon: Pokemon) {
-        pokemon.pokemonId?.let {
-            findNavController().navigate(
-                PokemonListFragmentDirections.showDetail(it)
-            )
-        }
+
+        pokemon.pokemonId?.let { viewModel.pokemonClicked(it) }
+
+//        pokemon.pokemonId?.let {
+//            findNavController().navigate(
+//                PokemonListFragmentDirections.showDetail(it)
+//            )
+//        }
     }
 
     companion object {
