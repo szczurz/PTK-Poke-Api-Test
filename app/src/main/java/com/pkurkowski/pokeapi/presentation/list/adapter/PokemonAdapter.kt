@@ -92,8 +92,8 @@ class PokemonAdapter(
                     }
                 }
             } else {
-
                 iconImageView.setImageDrawable(null)
+                nameTextView.text = "${pokemon?.original?.name} ${basicData.types}"
 
                 basicData.sprites.map
                     .filter { it.key.source == Source.Regular }

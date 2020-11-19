@@ -26,6 +26,9 @@ data class PokemonDataEntity(
     val dreamWorkFrontFemale: String?,
 
     val officialFront: String?,
+
+    //todo made separate table
+    val types: String
 )
 
 

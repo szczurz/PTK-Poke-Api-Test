@@ -15,7 +15,8 @@ sealed class PokemonData {
         val height: Int,
         val weight: Int,
         val isDefault: Boolean,
-        val sprites: PokemonSprites
+        val sprites: PokemonSprites,
+        val types: String
     ): PokemonData()
 }
 

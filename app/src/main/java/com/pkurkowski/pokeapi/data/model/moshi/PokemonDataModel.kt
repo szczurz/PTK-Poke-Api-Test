@@ -7,12 +7,13 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class PokemonDataModel(
     val name: String,
-    @Json(name = "base_experience") val baseExperience: Int,
+    @Json(name = "base_experience") val baseExperience: Int?,
     val height: Int,
     @Json(name = "is_default") val isDefault: Boolean,
     val order: Int,
     val weight: Int,
-    val sprites: PokemonSpritesModel
+    val sprites: PokemonSpritesModel,
+    val types: List<PokemonTypeWithSlot>
 )
 
 @JsonClass(generateAdapter = true)
@@ -45,12 +46,23 @@ data class OfficialArtworkSpritesModel(
     @Json(name = "front_default") val frontDefault: String?,
 )
 
+@JsonClass(generateAdapter = true)
+data class PokemonTypeWithSlot(
+    @Json(name = "slot") val slot: Int,
+    @Json(name = "type") val type: PokemonType,
+)
+
+@JsonClass(generateAdapter = true)
+data class PokemonType(
+    @Json(name = "name") val name: String,
+)
+
 
 
 
 fun PokemonDataModel.toEntity(id: Int) = PokemonDataEntity(
     pokemonId = id,
-    baseExperience = this.baseExperience,
+    baseExperience = this.baseExperience ?: 0,
     height = this.height,
     weight = this.weight,
     isDefault = this.isDefault,
@@ -67,6 +79,8 @@ fun PokemonDataModel.toEntity(id: Int) = PokemonDataEntity(
     dreamWorkFrontMale = this.sprites.other.dreamWord.frontDefault,
     dreamWorkFrontFemale = this.sprites.other.dreamWord.frontFemale,
 
-    officialFront = this.sprites.other.officialArtwork.frontDefault
+    officialFront = this.sprites.other.officialArtwork.frontDefault,
 
+    //todo implement separate table for types
+    types = this.types.joinToString(separator = " ") { it.type.name }
 )

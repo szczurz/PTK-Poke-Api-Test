@@ -49,6 +49,7 @@ fun PokemonWithData.toPokemon() = Pokemon(
             height = data.height,
             weight = data.weight,
             isDefault = data.isDefault,
+            types = data.types,
             sprites = this.toPokemonSprites()
         )
     }
