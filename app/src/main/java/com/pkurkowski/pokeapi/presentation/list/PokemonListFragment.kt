@@ -24,9 +24,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
     private val viewModel: PokemonListViewModel by viewModel()
 
     private val adapter: PokemonAdapter by lazy {
-        PokemonAdapter(::onPokemonClicked, viewModel.updatePokemonChannel).apply {
-            this.withLoadStateFooter(PokemonLoadStateAdapter(this::retry))
-        }
+        PokemonAdapter(::onPokemonClicked, viewModel.updatePokemonChannel)
     }
 
     private lateinit var layoutManager: LinearLayoutManager
@@ -42,7 +40,8 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
 
         errorTextView.setOnClickListener { adapter.retry() }
         errorImageView.setOnClickListener { adapter.retry() }
-        pokemonRecyclerView.adapter = adapter
+        pokemonRecyclerView.adapter =
+            adapter.withLoadStateFooter(PokemonLoadStateAdapter(adapter::retry))
         pokemonRecyclerView.layoutManager = layoutManager
 
         viewLifecycleOwner.lifecycleScope.launch {
