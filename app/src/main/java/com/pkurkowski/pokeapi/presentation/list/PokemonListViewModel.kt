@@ -5,18 +5,21 @@ import androidx.paging.*
 import com.pkurkowski.pokeapi.application.PokemonPagingSource
 import com.pkurkowski.pokeapi.domain.*
 import com.pkurkowski.pokeapi.presentation.list.adapter.PokemonWithUpdate
+import com.pkurkowski.pokeapi.presentation.list.adapter.UpdateRequestData
+import com.pkurkowski.pokeapi.presentation.list.adapter.UpdateStatus
 import io.uniflow.androidx.flow.AndroidDataFlow
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PokemonListViewModel(
     private val repository: PokemonRepository
 ) : AndroidDataFlow() {
 
-    val updatePokemonChannel = Channel<Int>(
+    val updatePokemonChannel = Channel<UpdateRequestData>(
         capacity = 0,
         onBufferOverflow = BufferOverflow.SUSPEND
     )
@@ -37,18 +40,23 @@ class PokemonListViewModel(
     init {
         viewModelScope.launch {
             updatePokemonChannel.consumeAsFlow()
-                .map {
-                    repository.requestPokemon(it)
+                .map { requestData ->
+                    sendPokemonUpdateEvent(requestData.pokemonIndex, UpdateStatus.InProgress)
+                    Pair(repository.requestPokemon(requestData.pokemonId), requestData.pokemonIndex)
                 }
-                .collect {
-                    if (it is PokemonResponse.Success) {
-                        it.pokemon.getSBasicDataOrNull()?.let { basicData ->
-                            sendPokemonUpdateEvent(it.pokemon.index, basicData)
-                        }
+                .collect { (response, pokemonIndex) ->
+
+                    val basicData =
+                        (response as? PokemonResponse.Success)?.pokemon?.getSBasicDataOrNull()
+
+                    if (basicData != null) {
+                        sendPokemonUpdateEvent(pokemonIndex, UpdateStatus.Updated(basicData))
+                    } else {
+                        sendPokemonUpdateEvent(pokemonIndex, UpdateStatus.Empty)
                     }
+
                 }
         }
-
     }
 
     fun startInitialState() = action {
@@ -66,8 +74,8 @@ class PokemonListViewModel(
         sendEvent(PokemonListEvent.PokemonSelectedEvent(pokemonId))
     }
 
-    fun sendPokemonUpdateEvent(pokemonIndex: Int, data: PokemonData.PokemonBasicData) = action {
-        sendEvent(PokemonListEvent.PokemonUpdatedEvent(pokemonIndex, data))
+    fun sendPokemonUpdateEvent(pokemonIndex: Int, status: UpdateStatus) = action {
+        sendEvent(PokemonListEvent.PokemonUpdatedEvent(pokemonIndex, status))
     }
 
     fun listStateChanged(state: AdapterLoadStateEnum) = action { currentState ->

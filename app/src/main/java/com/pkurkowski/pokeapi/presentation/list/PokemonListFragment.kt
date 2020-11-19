@@ -44,9 +44,6 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Timber.e("onCreate")
-
         viewModel.startInitialState()
     }
 
@@ -80,9 +77,11 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
             when (val event = it.take()) {
                 is PokemonListEvent.PokemonUpdatedEvent -> adapter.updatePokemon(
                     event.pokemonIndex,
-                    event.data
+                    event.status
                 )
-                is PokemonListEvent.PokemonSelectedEvent -> viewModel.sendPokemonClickedEvent(event.pokemonId)
+                is PokemonListEvent.PokemonSelectedEvent -> findNavController().navigate(
+                    PokemonListFragmentDirections.showDetail(event.pokemonId)
+                )
             }
         }
     }
