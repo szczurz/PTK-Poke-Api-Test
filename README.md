@@ -13,19 +13,22 @@ Use Moshi and Glide - DONE\
 Create pagination with Jetpack’s Paging library - DONE\
 Publish code in a github public repository - DONE
 
-Bonus - working offline - DONE
+## Bonus
+working offline - DONE\
+unit tests - Nope
 
 ## Comments and information
-With Paging Library it is hard to implement "true" MVI and would require some "hacks" to use internal paging library classes\
+With Paging Library it is hard to implement "true" MVI becouse of innacesible internal paging library classes\
 List of all pokemons provides only name and url for detail (id could be extracted from url)\
 Pokemon detail could be downloaded when name or id is known\
-Image of pokemon in a list is hardcoded (working for around 95% pokemons) and should be changed to update after downloading detail\
 List position is saved on rotation, it is important when user is browsing very long list\
-Current solution is depending on the order of pokemons on the list call, there is no sort parameter\
+Current solution is depending on the order of pokemons on the list call, there is no sort parameter in api\
 Current solution do not have any way of clearing/updating data after saving it on room
 
 ## Next things to do
-Unit Testing
-Change hardcoded image load to loading details of pokemons visible on the screen and then downloading image and add some other information on list (type ?).\
-Hack paging library to use MVI (fun but i am not sure of good in real project)\
-Searching and downloading list in the background until fully downloaded
+Unit Testing\
+Apply some theme/style current one is android studio default\
+Improve pokemon types (currenty stores in one join string)\
+Polish improve and extend UI especially types on list and better ui in pokemon detail page\
+Look to limit number of items/updates in memory, default PagerConfig value is Int.Max\
+Pokemon searching on the list
