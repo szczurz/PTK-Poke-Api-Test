@@ -19,6 +19,9 @@ class PokemonListViewModel(
     private val repository: PokemonRepository
 ) : AndroidDataFlow() {
 
+    private val updatesFlow = MutableStateFlow(mapOf<Int, UpdateStatus>())
+    private val updatesMap = mutableMapOf<Int, UpdateStatus>()
+
     val updatePokemonChannel = Channel<UpdateRequestData>(
         capacity = 0,
         onBufferOverflow = BufferOverflow.SUSPEND
@@ -35,7 +38,12 @@ class PokemonListViewModel(
         PokemonPagingSource(repository)
     }.flow
         .cachedIn(viewModelScope)
-        .map { it.map { pokemon -> PokemonWithUpdate(pokemon) } }
+        .map {
+            it.map { pokemon ->
+                val update = updatesFlow.value[pokemon.index] ?: UpdateStatus.Empty
+                PokemonWithUpdate(pokemon, update)
+            }
+        }
 
     init {
         viewModelScope.launch {
@@ -75,6 +83,8 @@ class PokemonListViewModel(
     }
 
     fun sendPokemonUpdateEvent(pokemonIndex: Int, status: UpdateStatus) = action {
+        updatesMap[pokemonIndex] = status
+        updatesFlow.emit(updatesMap.toMap())
         sendEvent(PokemonListEvent.PokemonUpdatedEvent(pokemonIndex, status))
     }
 

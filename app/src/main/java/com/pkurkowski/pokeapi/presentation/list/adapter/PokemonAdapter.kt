@@ -41,6 +41,9 @@ class PokemonAdapter(
         }.distinctUntilChanged()
 
     fun updatePokemon(index: Int, updateState: UpdateStatus) {
+        //update arrived when adapter is updating
+        if (itemCount <= index) return
+
         getItem(index)?.let {
             it.updateStatus = updateState
             notifyItemChanged(index)
