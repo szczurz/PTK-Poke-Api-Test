@@ -11,7 +11,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.pkurkowski.pokeapi.R
-import com.pkurkowski.pokeapi.domain.*
+import com.pkurkowski.pokeapi.domain.Source
+import com.pkurkowski.pokeapi.domain.getSBasicDataOrNull
 import io.uniflow.androidx.flow.onStates
 import kotlinx.android.synthetic.main.fragment_pokemon_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel

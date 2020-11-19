@@ -1,12 +1,9 @@
 package com.pkurkowski.pokeapi.application
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
-import androidx.paging.PagingState
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.domain.PokemonRepository
 import com.pkurkowski.pokeapi.domain.PokemonsResponse
-import timber.log.Timber
 
 class PokemonPagingSource(private val repository: PokemonRepository) : PagingSource<Int, Pokemon>() {
 

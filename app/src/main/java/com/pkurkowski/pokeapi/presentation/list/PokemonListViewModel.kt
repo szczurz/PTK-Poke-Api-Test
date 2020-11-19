@@ -1,9 +1,14 @@
 package com.pkurkowski.pokeapi.presentation.list
 
 import androidx.lifecycle.viewModelScope
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.map
 import com.pkurkowski.pokeapi.application.PokemonPagingSource
-import com.pkurkowski.pokeapi.domain.*
+import com.pkurkowski.pokeapi.domain.PokemonRepository
+import com.pkurkowski.pokeapi.domain.PokemonResponse
+import com.pkurkowski.pokeapi.domain.getSBasicDataOrNull
 import com.pkurkowski.pokeapi.presentation.list.adapter.PokemonWithUpdate
 import com.pkurkowski.pokeapi.presentation.list.adapter.UpdateRequestData
 import com.pkurkowski.pokeapi.presentation.list.adapter.UpdateStatus
@@ -13,7 +18,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class PokemonListViewModel(
     private val repository: PokemonRepository
@@ -67,6 +71,11 @@ class PokemonListViewModel(
         }
     }
 
+    fun onPause() = viewModelScope.launch {
+        updatesFlow.emit(updatesMap.toMap())
+    }
+
+
     fun startInitialState() = action {
         viewModelScope.launch {
             pagingData.collectLatest { data ->
@@ -84,7 +93,6 @@ class PokemonListViewModel(
 
     fun sendPokemonUpdateEvent(pokemonIndex: Int, status: UpdateStatus) = action {
         updatesMap[pokemonIndex] = status
-        updatesFlow.emit(updatesMap.toMap())
         sendEvent(PokemonListEvent.PokemonUpdatedEvent(pokemonIndex, status))
     }
 

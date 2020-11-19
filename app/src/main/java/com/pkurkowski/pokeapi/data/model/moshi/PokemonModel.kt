@@ -4,7 +4,6 @@ import android.net.Uri
 import com.pkurkowski.pokeapi.data.model.room.PokemonEntity
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.domain.PokemonData
-import timber.log.Timber
 
 data class PokemonModel(
     val url: String,

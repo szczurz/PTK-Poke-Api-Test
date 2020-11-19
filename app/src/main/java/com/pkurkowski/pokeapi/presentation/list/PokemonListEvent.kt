@@ -1,6 +1,5 @@
 package com.pkurkowski.pokeapi.presentation.list
 
-import com.pkurkowski.pokeapi.domain.PokemonData
 import com.pkurkowski.pokeapi.presentation.list.adapter.UpdateStatus
 import io.uniflow.core.flow.data.UIEvent
 

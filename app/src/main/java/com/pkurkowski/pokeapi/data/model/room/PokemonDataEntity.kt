@@ -1,7 +1,6 @@
 package com.pkurkowski.pokeapi.data.model.room
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 

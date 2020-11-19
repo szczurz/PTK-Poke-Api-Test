@@ -1,8 +1,5 @@
 package com.pkurkowski.pokeapi.presentation.detail
 
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.style.BulletSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

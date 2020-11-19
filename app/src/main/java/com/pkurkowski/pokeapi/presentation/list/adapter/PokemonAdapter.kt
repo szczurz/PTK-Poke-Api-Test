@@ -21,7 +21,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
 class PokemonAdapter(
     private val clickListener: (Pokemon) -> Unit,
