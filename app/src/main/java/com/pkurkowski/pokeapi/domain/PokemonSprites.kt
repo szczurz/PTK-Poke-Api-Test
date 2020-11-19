@@ -1,6 +1,10 @@
 package com.pkurkowski.pokeapi.domain
 
-class PokemonSprites(val map: Map<SpriteDescription, String>)
+data class PokemonSprites(
+    val regularSprites: Map<SpriteDescription, String>,
+    val dreamWordSprites: Map<SpriteDescription, String>,
+    val officialArtWork: Pair<SpriteDescription, String>?
+)
 
 enum class Side {
     Front, Back

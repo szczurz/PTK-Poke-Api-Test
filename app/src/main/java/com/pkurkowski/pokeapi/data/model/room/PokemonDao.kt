@@ -60,7 +60,7 @@ fun PokemonWithData.toPokemon() = Pokemon(
 
 fun PokemonWithData.toPokemonSprites(): PokemonSprites {
     return when (this.data) {
-        null -> PokemonSprites(mapOf())
+        null -> PokemonSprites(mapOf(),mapOf(),null)
         else -> {
             val tempMap = mutableMapOf<SpriteDescription, String>()
             with(this.data) {
@@ -73,7 +73,7 @@ fun PokemonWithData.toPokemonSprites(): PokemonSprites {
                 frontFemale?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Female, Style.Regular), it) }
                 frontShinyFemale?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Female, Style.Shiny), it) }
             }
-            PokemonSprites(tempMap.toMap())
+            PokemonSprites(tempMap.toMap(),mapOf(),null)
         }
     }
 }

@@ -85,7 +85,7 @@ class DetailFragment() : Fragment() {
             }
             else -> {
                 spritesRecyclerView.isVisible = true
-                spritesRecyclerView.adapter = SpritesAdapter(basicData.sprites.map)
+                spritesRecyclerView.adapter = SpritesAdapter(basicData.sprites.regularSprites)
 
                 descriptionTextView.text = resources.getString(
                     R.string.pokemon_data_description,

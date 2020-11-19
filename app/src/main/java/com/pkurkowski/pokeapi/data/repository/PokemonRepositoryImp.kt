@@ -109,6 +109,7 @@ class PokemonRepositoryImp(
                     }
                 }
             } catch (e: Exception) {
+                Timber.d("exception getting pokemon id: $id e: $e")
                 PokemonResponse.Fail(e)
             }
         }

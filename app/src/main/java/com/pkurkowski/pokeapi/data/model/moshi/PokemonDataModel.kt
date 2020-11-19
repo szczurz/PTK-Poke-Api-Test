@@ -24,8 +24,29 @@ data class PokemonSpritesModel(
     @Json(name = "back_female") val backFemale: String?,
     @Json(name = "back_shiny_female") val backShinyFemale: String?,
     @Json(name = "front_female") val frontFemale: String?,
-    @Json(name = "front_shiny_female") val frontShinyFemale: String?
+    @Json(name = "front_shiny_female") val frontShinyFemale: String?,
+    @Json(name = "other") val other: SpritesOtherModel
 )
+
+@JsonClass(generateAdapter = true)
+data class SpritesOtherModel(
+    @Json(name = "dream_world") val dreamWord: DreamWorkSpritesModel,
+    @Json(name = "official-artwork") val officialArtwork: OfficialArtworkSpritesModel
+)
+
+@JsonClass(generateAdapter = true)
+data class DreamWorkSpritesModel(
+    @Json(name = "front_default") val front_default: String?,
+    @Json(name = "front_female") val front_female: String?,
+)
+
+@JsonClass(generateAdapter = true)
+data class OfficialArtworkSpritesModel(
+    @Json(name = "front_default") val front_default: String?,
+)
+
+
+
 
 fun PokemonDataModel.toEntity(id: Int) = PokemonDataEntity(
     pokemonId = id,
