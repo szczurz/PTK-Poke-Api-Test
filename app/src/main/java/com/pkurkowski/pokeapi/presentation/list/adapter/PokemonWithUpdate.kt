@@ -8,5 +8,6 @@ data class PokemonWithUpdate(val original: Pokemon, var updateStatus: UpdateStat
 sealed class UpdateStatus {
     object Empty: UpdateStatus()
     object InProgress: UpdateStatus()
+    object Error: UpdateStatus()
     data class Updated(val pokemonData: PokemonData.PokemonBasicData): UpdateStatus()
 }

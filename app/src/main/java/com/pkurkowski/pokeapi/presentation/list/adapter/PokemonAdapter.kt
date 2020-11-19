@@ -10,9 +10,12 @@ import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.pkurkowski.pokeapi.R
 import com.pkurkowski.pokeapi.domain.Pokemon
 import com.pkurkowski.pokeapi.domain.PokemonData
+import com.pkurkowski.pokeapi.domain.Source
 import com.pkurkowski.pokeapi.presentation.list.AdapterLoadStateEnum
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
@@ -54,8 +57,6 @@ class PokemonAdapter(
         LayoutInflater.from(parent.context).inflate(R.layout.item_pokemon_list, parent, false)
     ) {
         private val nameTextView: TextView = itemView.findViewById(R.id.nameTextView)
-        private val indexTextView: TextView = itemView.findViewById(R.id.indexTextView)
-        private val idTextView: TextView = itemView.findViewById(R.id.idTextView)
         private val iconImageView: ImageView = itemView.findViewById(R.id.iconImageView)
         private val progressBar: ProgressBar = itemView.findViewById(R.id.progressBar)
 
@@ -65,9 +66,6 @@ class PokemonAdapter(
             job?.cancel()
 
             nameTextView.text = pokemon?.original?.name ?: ""
-            indexTextView.text = pokemon?.original?.index.toString() ?: "--"
-            idTextView.text = pokemon?.original?.pokemonId?.toString() ?: "--"
-
             progressBar.isVisible = pokemon?.updateStatus == UpdateStatus.InProgress
 
             if (pokemon == null) {
@@ -85,10 +83,29 @@ class PokemonAdapter(
             if (basicData == null) {
                 iconImageView.setImageDrawable(null)
                 pokemon?.let {
-                    if(it.updateStatus == UpdateStatus.Empty) sendUpdateRequestIfPossible(it.original)
+                    when(it.updateStatus) {
+                        UpdateStatus.Empty -> sendUpdateRequestIfPossible(it.original)
+                        UpdateStatus.Error -> {
+                            iconImageView.setImageResource(R.drawable.ic_baseline_sync_problem_24)
+                            sendUpdateRequestIfPossible(it.original, true)
+                        }
+                    }
                 }
             } else {
-                iconImageView.setImageResource(R.drawable.ic_baseline_sync_24)
+
+                iconImageView.setImageDrawable(null)
+
+                basicData.sprites.map
+                    .filter { it.key.source == Source.Regular }
+                    .values.firstOrNull()
+                    .let {
+                        Glide.with(iconImageView)
+                            .load(it)
+                            .placeholder(R.drawable.ic_baseline_sync_24)
+                            .error(R.drawable.ic_twotone_help_24)
+                            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                            .into(iconImageView)
+                    }
             }
         }
 
@@ -96,10 +113,15 @@ class PokemonAdapter(
             job?.cancel()
         }
 
-        private fun sendUpdateRequestIfPossible(pokemon: Pokemon) {
+        private fun sendUpdateRequestIfPossible(pokemon: Pokemon, afterError: Boolean = false) {
             pokemon.pokemonId?.let { pokemonId ->
+                val delay = if (afterError) {
+                    DELAY_TO_PROCESS_UPDATE_AFTER_ERROR_MILLISECONDS
+                } else {
+                    DELAY_TO_PROCESS_UPDATE_MILLISECONDS
+                }
                 job = CoroutineScope(Dispatchers.Main).launch {
-                    delay(DELAY_TO_PROCESS_UPDATE_MILLISECONDS)
+                    delay(delay)
                     updateChannel.send(UpdateRequestData(pokemon.index, pokemonId))
                 }
             }
@@ -126,6 +148,7 @@ class PokemonAdapter(
 
     companion object {
         const val DELAY_TO_PROCESS_UPDATE_MILLISECONDS = 600L
+        const val DELAY_TO_PROCESS_UPDATE_AFTER_ERROR_MILLISECONDS = 5000L
     }
 }
 

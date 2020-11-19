@@ -18,16 +18,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="@+id/iconImageView"
-        app:layout_constraintEnd_toEndOf="@+id/iconImageView"
-        app:layout_constraintTop_toTopOf="@+id/iconImageView"
-        app:layout_constraintBottom_toBottomOf="@+id/iconImageView"
-        />
-
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="0dp"
@@ -37,45 +27,19 @@
         style="@style/TextAppearance.AppCompat.Title"
         android:padding="@dimen/standard_margin"
         app:layout_constraintStart_toEndOf="@+id/iconImageView"
-        app:layout_constraintEnd_toStartOf="@+id/numbersBarrier"
+        app:layout_constraintEnd_toStartOf="@+id/progressBar"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="SomeVery loongss nameee to test elip sisss"
         />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/numbersBarrier"
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="start"
-        app:constraint_referenced_ids="indexTextView,idTextView"
-        />
-
-    <TextView
-        android:id="@+id/indexTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:maxEms="4"
-        style="@style/TextAppearance.AppCompat.Small"
+        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/idTextView"
-        tools:text="123"
-        />
-
-    <TextView
-        android:id="@+id/idTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:maxEms="4"
-        style="@style/TextAppearance.AppCompat.Small"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/indexTextView"
-        tools:text="123"
         />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

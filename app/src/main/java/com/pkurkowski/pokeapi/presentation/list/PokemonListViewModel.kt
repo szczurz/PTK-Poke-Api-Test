@@ -60,7 +60,7 @@ class PokemonListViewModel(
                     if (basicData != null) {
                         sendPokemonUpdateEvent(pokemonIndex, UpdateStatus.Updated(basicData))
                     } else {
-                        sendPokemonUpdateEvent(pokemonIndex, UpdateStatus.Empty)
+                        sendPokemonUpdateEvent(pokemonIndex, UpdateStatus.Error)
                     }
 
                 }
