@@ -21,6 +21,11 @@ data class PokemonDataEntity(
     val backShinyFemale: String?,
     val frontFemale: String?,
     val frontShinyFemale: String?,
+
+    val dreamWorkFrontMale: String?,
+    val dreamWorkFrontFemale: String?,
+
+    val officialFront: String?,
 )
 
 

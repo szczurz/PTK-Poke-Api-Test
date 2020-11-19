@@ -1,9 +1,7 @@
 package com.pkurkowski.pokeapi.data.model.room
 
 import androidx.room.*
-import com.pkurkowski.pokeapi.data.model.moshi.toEntity
 import com.pkurkowski.pokeapi.domain.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PokemonDao {
@@ -29,9 +27,7 @@ interface PokemonDao {
 
     @Query("SELECT * FROM pokemon WHERE pokemonId = :pokemonId")
     fun getPokemon(pokemonId: Int): PokemonWithData?
-
 }
-
 
 data class PokemonWithData(
     @Embedded val pokemon: PokemonEntity,
@@ -60,20 +56,53 @@ fun PokemonWithData.toPokemon() = Pokemon(
 
 fun PokemonWithData.toPokemonSprites(): PokemonSprites {
     return when (this.data) {
-        null -> PokemonSprites(mapOf(),mapOf(),null)
+        null -> PokemonSprites(mapOf())
         else -> {
-            val tempMap = mutableMapOf<SpriteDescription, String>()
+
+            //todo implement some kind of builder here
+            val map = mutableMapOf<SpriteDescription, String>()
+
+            this.data.officialFront?.let { map.put(
+                SpriteDescription(Side.Front, Gender.Male, Style.Regular, Source.Official), it) }
+
             with(this.data) {
-                backDefault?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Male, Style.Regular), it) }
-                backShiny?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Male, Style.Shiny), it) }
-                frontDefault?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Male, Style.Regular), it) }
-                frontShiny?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Male, Style.Shiny), it) }
-                backFemale?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Female, Style.Regular), it) }
-                backShinyFemale?.let { tempMap.put(SpriteDescription(Side.Back, Gender.Female, Style.Shiny), it) }
-                frontFemale?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Female, Style.Regular), it) }
-                frontShinyFemale?.let { tempMap.put(SpriteDescription(Side.Front, Gender.Female, Style.Shiny), it) }
+                dreamWorkFrontMale?.let { map.put(
+                    SpriteDescription(Side.Front, Gender.Male, Style.Regular, Source.DreamWorks), it) }
+                dreamWorkFrontFemale?.let { map.put(
+                    SpriteDescription(Side.Front, Gender.Female, Style.Regular, Source.DreamWorks), it) }
             }
-            PokemonSprites(tempMap.toMap(),mapOf(),null)
+
+            with(this.data) {
+                backDefault?.let { map.put(
+                    SpriteDescription(Side.Back, Gender.Male, Style.Regular, Source.Regular), it) }
+                backShiny?.let { map.put(
+                    SpriteDescription(Side.Back, Gender.Male, Style.Shiny, Source.Regular), it) }
+                frontDefault?.let { map.put(
+                    SpriteDescription(Side.Front, Gender.Male, Style.Regular, Source.Regular), it) }
+                frontShiny?.let { map.put(
+                    SpriteDescription(Side.Front, Gender.Male, Style.Shiny, Source.Regular), it) }
+                backFemale?.let { map.put(
+                    SpriteDescription(Side.Back, Gender.Female, Style.Regular, Source.Regular), it) }
+                backShinyFemale?.let { map.put(
+                    SpriteDescription(Side.Back, Gender.Female, Style.Shiny, Source.Regular), it) }
+                frontFemale?.let { map.put(
+                    SpriteDescription(Side.Front, Gender.Female, Style.Regular, Source.Regular), it) }
+                frontShinyFemale?.let { map.put(
+                    SpriteDescription(Side.Front, Gender.Female, Style.Shiny, Source.Regular), it) }
+            }
+
+
+
+            PokemonSprites(
+                map.toMap()
+            )
+
+            /**
+             *                 dreamWorks.toMap(),
+            this.data.officialFront?.let { Pair(SpriteDescription(Side.Front, Gender.Male, Style.Regular), it) }
+             */
+
+
         }
     }
 }

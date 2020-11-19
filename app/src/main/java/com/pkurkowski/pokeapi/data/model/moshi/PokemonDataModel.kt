@@ -36,13 +36,13 @@ data class SpritesOtherModel(
 
 @JsonClass(generateAdapter = true)
 data class DreamWorkSpritesModel(
-    @Json(name = "front_default") val front_default: String?,
-    @Json(name = "front_female") val front_female: String?,
+    @Json(name = "front_default") val frontDefault: String?,
+    @Json(name = "front_female") val frontFemale: String?,
 )
 
 @JsonClass(generateAdapter = true)
 data class OfficialArtworkSpritesModel(
-    @Json(name = "front_default") val front_default: String?,
+    @Json(name = "front_default") val frontDefault: String?,
 )
 
 
@@ -63,4 +63,10 @@ fun PokemonDataModel.toEntity(id: Int) = PokemonDataEntity(
     backShinyFemale = this.sprites.backShinyFemale,
     frontFemale = this.sprites.frontFemale,
     frontShinyFemale = this.sprites.frontShinyFemale,
+
+    dreamWorkFrontMale = this.sprites.other.dreamWord.frontDefault,
+    dreamWorkFrontFemale = this.sprites.other.dreamWord.frontFemale,
+
+    officialFront = this.sprites.other.officialArtwork.frontDefault
+
 )

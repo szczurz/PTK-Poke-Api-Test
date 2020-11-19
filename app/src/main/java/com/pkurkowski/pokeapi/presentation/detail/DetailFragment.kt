@@ -1,19 +1,17 @@
 package com.pkurkowski.pokeapi.presentation.detail
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import com.pkurkowski.pokeapi.R
-import com.pkurkowski.pokeapi.domain.Pokemon
-import com.pkurkowski.pokeapi.domain.PokemonData
-import com.pkurkowski.pokeapi.domain.PokemonSprites
-import com.pkurkowski.pokeapi.domain.getSBasicDataOrNull
+import com.pkurkowski.pokeapi.domain.*
 import io.uniflow.androidx.flow.onStates
 import kotlinx.android.synthetic.main.fragment_pokemon_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -85,8 +83,8 @@ class DetailFragment() : Fragment() {
             }
             else -> {
                 spritesRecyclerView.isVisible = true
-                spritesRecyclerView.adapter = SpritesAdapter(basicData.sprites.regularSprites)
-
+                spritesRecyclerView.adapter =
+                    SpritesAdapter(basicData.sprites.map.filter { it.key.source != Source.DreamWorks })
                 descriptionTextView.text = resources.getString(
                     R.string.pokemon_data_description,
                     basicData.baseExperience,
@@ -94,7 +92,27 @@ class DetailFragment() : Fragment() {
                     basicData.weight,
                     basicData.isDefault,
                 )
+
+                mainImageView.isVisible = basicData.sprites.map
+                    .filter { it.key.source == Source.DreamWorks }
+                    .values.firstOrNull()?.let {
+                        Uri.parse(it).let {uri ->
+
+                            if(uri == null) {
+                                mainImageView.setImageResource(R.drawable.ic_twotone_error_24)
+                            } else {
+                                GlideToVectorYou
+                                    .init()
+                                    .with(mainImageView.context)
+                                    .setPlaceHolder(R.drawable.ic_baseline_sync_24, R.drawable.ic_twotone_error_24)
+                                    .load(uri, mainImageView);
+                            }
+                        }
+                        true
+                    } ?: false
+
             }
         }
     }
+
 }
